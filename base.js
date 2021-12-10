@@ -191,8 +191,28 @@ const capture = () => {
         }
     }
 };
+//检查坐标点颜色是否符合
+const checkColor = (x) => {
+    const p = findPoint(x);
+    const img = capture();
+    sleepX(0.2)
+    // noinspection JSUnresolvedFunction
+    const point = findColor(img, p.color, {
+        region: [p.x - 2, p.y - 2, 4, 4],
+        threshold: config.threshold
+    });
+    if (point) {
+        return true;
+    }
+
+    // noinspection JSUnresolvedVariable,JSUnresolvedFunction,JSCheckFunctionSignatures
+    const msg = colors.toString(images.pixel(img, p.x, p.y));
+
+    // noinspection JSUnresolvedVariable,JSUnresolvedFunction
+    return colors.isSimilar(msg, p.color, config.threshold);
+}
 //检查坐标点是否存在
-const checkPoint = (o) => {
+const findPoint = (o) => {
     if (typeof o === 'string' && points.hasOwnProperty(o)) {
         return points[o]
     }
@@ -211,7 +231,7 @@ const checkPoint = (o) => {
 //定时检查已运行时长
 const checkTimeInterval = () => {
     // noinspection JSUnresolvedVariable
-    const thread = threads.start(() => {
+    const thread = threads.start(function () {
         setInterval(function () {
             const now = getNowTime();
             timer.total = now - timer.start
