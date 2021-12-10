@@ -61,6 +61,15 @@ const intTo16 = (s) => {
     let x = s.toString(16);
     return (x.length === 1 ? "0" : "") + x;
 }
+
+function Point(name, x, y, color) {
+    this.name = name;
+    this.x = x;
+    this.y = y;
+    this.color = color;
+}
+
+//添加默认坐标点
 const addDefaultPoints = () => {
     l("导入预设坐标")
     addPoint("返回", 100, 53, 255, 255, 254);
@@ -165,16 +174,39 @@ const addDefaultPoints = () => {
 
     l("导入预设坐标:完成")
 }
-
+//添加坐标点
 const addPoint = (name, x, y, r, g, b) => {
     let color = g ? ("#ff" + intTo16(r) + intTo16(g) + intTo16(b)) : r;
-    points[name] = {
-        name: name,
-        x: x,
-        y: y,
-        color: color
-    };
+    points[name] = new Point(name, x, y, color);
     l("加载坐标点 " + name + " x:" + x + " y:" + y)
+}
+//稳定截图模块
+const capture = () => {
+    let a;
+    while (true) {
+        // noinspection JSUnresolvedFunction
+        a = captureScreen()
+        if (a) {
+            return a;
+        }
+    }
+};
+//检查坐标点是否存在
+const checkPoint = (o) => {
+    if (typeof o === 'string' && points.hasOwnProperty(o)) {
+        return points[o]
+    }
+    if (typeof o === 'object') {
+        if (o.hasOwnProperty('name') && points.hasOwnProperty(o.name)) {
+            return points[o.name];
+        }
+        if (o.hasOwnProperty('x') && o.hasOwnProperty('y')) {
+            return o;
+        }
+    }
+    info("坐标点非法 程序停止 " + o)
+    // noinspection JSUnresolvedFunction
+    exit();
 }
 //定时检查已运行时长
 const checkTimeInterval = () => {
